@@ -1,0 +1,43 @@
+type QueryRoot {
+  getAllMenu: [MenuRecord!]!
+
+  getMenuById: MenuRecord!
+
+  getAllOrder: [Customer!]!
+
+  getOrderById: Customer!
+}
+
+type MenuRecord {
+  id: Int!
+  menu: String!
+  price: Int!
+  stock: Int!
+}
+
+type Customer {
+  id: Int!
+  menu: String!
+  price: Int!
+  orderedAt: String!
+}
+
+type MutationRoot {
+  addNewOrder(input: CustomerInput): Customer!
+
+  addNewMenu(input: MenuInput): MenuRecord!
+}
+
+input CustomerInput {
+  menu: String!
+  price: Int!
+}
+
+input MenuInput {
+  menu: String!
+  price: Int!
+  stock: Int!
+}
+
+
+

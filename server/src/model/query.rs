@@ -1,7 +1,7 @@
 use async_graphql::{Context, Object, SimpleObject};
 use sqlx::{postgres::PgPool, FromRow};
 
-pub struct QueryRoot;
+pub struct Query;
 
 #[derive(FromRow, SimpleObject)]
 pub struct MenuRecord {
@@ -20,7 +20,7 @@ pub struct Customer {
 }
 
 #[Object]
-impl QueryRoot {
+impl Query {
     async fn get_all_menu(
         &self,
         ctx: &Context<'_>,

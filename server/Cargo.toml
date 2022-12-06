@@ -1,5 +1,5 @@
 [package]
-name = "backend"
+name = "server"
 version = "0.1.0"
 edition = "2021"
 
@@ -11,3 +11,5 @@ tokio = { version = "1.8", features = ["macros", "rt-multi-thread"] }
 sqlx = { version = "0.6.2", features = ["runtime-tokio-rustls", "postgres", "chrono"] }
 chrono = "0.4"
 dotenvy = "0.15.6"
+http = "0.2.8"
+tower-http = {version = "0.3.4", features = ["cors"] }

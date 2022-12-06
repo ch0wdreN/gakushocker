@@ -17,10 +17,10 @@ struct Menu {
     stock: i32,
 }
 
-pub struct MutationRoot;
+pub struct Mutation;
 
 #[Object]
-impl MutationRoot {
+impl Mutation {
     async fn add_new_order(
         &self,
         ctx: &Context<'_>,

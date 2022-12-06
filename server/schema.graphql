@@ -1,4 +1,4 @@
-type QueryRoot {
+type Query {
   getAllMenu: [MenuRecord!]!
 
   getMenuById: MenuRecord!
@@ -22,7 +22,7 @@ type Customer {
   orderedAt: String!
 }
 
-type MutationRoot {
+type Mutation {
   addNewOrder(input: CustomerInput): Customer!
 
   addNewMenu(input: MenuInput): MenuRecord!
@@ -37,6 +37,12 @@ input MenuInput {
   menu: String!
   price: Int!
   stock: Int!
+}
+
+schema {
+  query: Query
+
+  mutation: Mutation
 }
 
 

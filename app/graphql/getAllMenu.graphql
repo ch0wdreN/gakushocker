@@ -1,0 +1,7 @@
+query get_all_menu {
+    getAllMenu {
+        menu
+        price
+        stock
+    }
+}

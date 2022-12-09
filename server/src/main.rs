@@ -1,7 +1,7 @@
 use async_graphql::{http::GraphiQLSource, EmptySubscription, Request, Response, Schema};
 use axum::{
     extract::State,
-    response::{self, IntoResponse},
+    response::{IntoResponse, Html},
     routing::get,
     Json, Router, Server,
 };
@@ -21,9 +21,9 @@ async fn graphql_handler(schema: State<GakushockerSchema>, req: Json<Request>) -
 }
 
 async fn graphql() -> impl IntoResponse {
-    response::Html(
+    Html(
         GraphiQLSource::build()
-            .endpoint("http://localhost:8000")
+            .endpoint("http://localhost:8080")
             .finish(),
     )
 }
@@ -54,6 +54,9 @@ async fn main() {
             "http://localhost:8080"
                 .parse::<http::HeaderValue>()
                 .unwrap(),
+            "http://localhost"
+                .parse::<http::HeaderValue>()
+                .unwrap(),
         ])
         .allow_headers(Any);
 
@@ -62,9 +65,9 @@ async fn main() {
         .with_state(schema)
         .layer(cors);
 
-    println!("🚀 GraphQL IDE: http://localhost:8000");
+    println!("🚀 GraphQL IDE: http://localhost:8080");
 
-    Server::bind(&"127.0.0.1:8000".parse().unwrap())
+    Server::bind(&"0.0.0.0:8080".parse().unwrap())
         .serve(app.into_make_service())
         .await
         .unwrap();

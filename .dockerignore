@@ -1,0 +1,7 @@
+.git
+server/target
+table.drawio
+.idea
+app/node_modules
+app/yarn.lock
+README.md

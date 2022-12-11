@@ -1,43 +1,30 @@
 import type { Component } from 'solid-js';
-import { gql, createGraphQLClient } from '@solid-primitives/graphql';
-import { Get_All_MenuQuery, MenuRecord } from '../generated/graphql';
+import { lazy } from 'solid-js';
+import { useRoutes, Router } from '@solidjs/router';
 
-import { For } from 'solid-js';
-import Card from '~/component/Card';
+const menu = lazy(() => import('@p/Menu'));
+
+const routes = [
+  {
+    path: '/',
+    component: menu,
+  },
+];
 
 const App: Component = () => {
-  const getAllMenuDocument = gql`
-    query get_all_menu {
-      getAllMenu {
-        id
-        menu
-        price
-        stock
-      }
-    }
-  `;
-  const endpoint = 'http://localhost:8080';
-  const client = createGraphQLClient(endpoint);
-  const [data] = client<Get_All_MenuQuery>(getAllMenuDocument);
+  const Routes = useRoutes(routes);
   return (
     <>
-      <section class="text-gray-600 body-font">
-        <div class="container px-5 py-24 mx-auto">
-          <div class="flex flex-wrap -m-4">
-            <For each={data()?.getAllMenu}>
-              {(menu: MenuRecord) => {
-                return (
-                  <Card
-                    menu={menu.menu}
-                    stock={menu.stock}
-                    price={menu.price}
-                  />
-                );
-              }}
-            </For>
-          </div>
+      <header class="bg-white shadow">
+        <div class="mx-auto max-w-7xl py-6 px-4 sm:px-6 lg:px-8">
+          <h1 class="text-3xl font-bold tracking-tight text-gray-900">
+            学ショッカー
+          </h1>
         </div>
-      </section>
+      </header>
+      <Router>
+        <Routes />
+      </Router>
     </>
   );
 };

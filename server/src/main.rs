@@ -1,7 +1,7 @@
 use async_graphql::{http::GraphiQLSource, EmptySubscription, Request, Response, Schema};
 use axum::{
     extract::State,
-    response::{IntoResponse, Html},
+    response::{Html, IntoResponse},
     routing::get,
     Json, Router, Server,
 };
@@ -54,9 +54,7 @@ async fn main() {
             "http://localhost:8080"
                 .parse::<http::HeaderValue>()
                 .unwrap(),
-            "http://localhost"
-                .parse::<http::HeaderValue>()
-                .unwrap(),
+            "http://localhost".parse::<http::HeaderValue>().unwrap(),
         ])
         .allow_headers(Any);
 

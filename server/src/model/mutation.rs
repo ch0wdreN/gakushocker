@@ -1,11 +1,11 @@
 use async_graphql::{Context, InputObject, Object};
 use sqlx::postgres::PgPool;
 
-use crate::model::query::Customer;
+use crate::model::query::Order;
 use crate::model::query::MenuRecord;
 
 #[derive(InputObject)]
-struct CustomerInput {
+struct OrderInput {
     menu: String,
     price: i32,
 }
@@ -21,25 +21,25 @@ pub struct Mutation;
 
 #[Object]
 impl Mutation {
-    async fn add_new_order(
+    async fn create_order(
         &self,
         ctx: &Context<'_>,
-        input: CustomerInput,
-    ) -> Result<Customer, async_graphql::Error> {
+        input: OrderInput,
+    ) -> Result<Order, async_graphql::Error> {
         let pool = ctx.data::<PgPool>()?;
         let mut tx = pool.begin().await?;
         let sql =
-            "insert into customer (menu, price, ordered_at) values ($1, $2, CURRENT_TIMESTAMP) returning id, menu, price, ordered_at;";
-        let customer: Customer = sqlx::query_as(sql)
+            "insert into orders (menu, price, ordered_at) values ($1, $2, CURRENT_TIMESTAMP) returning id, menu, price, ordered_at;";
+        let order: Order = sqlx::query_as(sql)
             .bind(input.menu)
             .bind(input.price)
             .fetch_one(&mut tx)
             .await?;
         tx.commit().await?;
-        Ok(customer)
+        Ok(order)
     }
 
-    async fn add_new_menu(
+    async fn create_menu(
         &self,
         ctx: &Context<'_>,
         input: Menu,

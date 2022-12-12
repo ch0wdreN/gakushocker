@@ -2,12 +2,12 @@
 
 CREATE TABLE menu (
     id serial not null primary key
-    , menu varchar(16) not null
+    , menu varchar(16) not null unique
     , price int not null
     , stock int not null
 );
 
-CREATE TABLE customer (
+CREATE TABLE orders (
     id serial not null primary key
     , menu varchar(256) not null
     , price int not null

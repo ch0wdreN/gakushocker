@@ -12,7 +12,7 @@ pub struct MenuRecord {
 }
 
 #[derive(FromRow, SimpleObject)]
-pub struct Customer {
+pub struct Order {
     id: i32,
     menu: String,
     price: i32,
@@ -21,17 +21,14 @@ pub struct Customer {
 
 #[Object]
 impl Query {
-    async fn get_all_menu(
-        &self,
-        ctx: &Context<'_>,
-    ) -> Result<Vec<MenuRecord>, async_graphql::Error> {
+    async fn list_menu(&self, ctx: &Context<'_>) -> Result<Vec<MenuRecord>, async_graphql::Error> {
         let pool = ctx.data::<PgPool>()?;
         let sql = "select id, menu, price, stock from menu";
         let menu = sqlx::query_as(sql).fetch_all(pool).await?;
         Ok(menu)
     }
 
-    async fn get_menu_by_id(
+    async fn get_menu(
         &self,
         ctx: &Context<'_>,
         id: i32,
@@ -42,24 +39,21 @@ impl Query {
         Ok(menu)
     }
 
-    async fn get_all_order(
-        &self,
-        ctx: &Context<'_>,
-    ) -> Result<Vec<Customer>, async_graphql::Error> {
+    async fn list_order(&self, ctx: &Context<'_>) -> Result<Vec<Order>, async_graphql::Error> {
         let pool = ctx.data::<PgPool>()?;
-        let sql = "select id, menu, price, ordered_at from customer";
-        let customers: Vec<Customer> = sqlx::query_as(sql).fetch_all(pool).await?;
-        Ok(customers)
+        let sql = "select id, menu, price, ordered_at from orders";
+        let orders: Vec<Order> = sqlx::query_as(sql).fetch_all(pool).await?;
+        Ok(orders)
     }
 
-    async fn get_order_by_id(
+    async fn get_order(
         &self,
         ctx: &Context<'_>,
         id: i32,
-    ) -> Result<Customer, async_graphql::Error> {
+    ) -> Result<Order, async_graphql::Error> {
         let pool = ctx.data::<PgPool>()?;
-        let sql = "select id, menu, price, ordered_at from customer where id = $1";
-        let customer: Customer = sqlx::query_as(sql).bind(id).fetch_one(pool).await?;
-        Ok(customer)
+        let sql = "select id, menu, price, ordered_at from orders where id = $1";
+        let order: Order = sqlx::query_as(sql).bind(id).fetch_one(pool).await?;
+        Ok(order)
     }
 }

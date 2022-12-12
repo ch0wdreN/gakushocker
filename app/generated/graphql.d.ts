@@ -12,19 +12,6 @@ export type Scalars = {
   Float: number;
 };
 
-export type Customer = {
-  __typename?: 'Customer';
-  id: Scalars['Int'];
-  menu: Scalars['String'];
-  orderedAt: Scalars['String'];
-  price: Scalars['Int'];
-};
-
-export type CustomerInput = {
-  menu: Scalars['String'];
-  price: Scalars['Int'];
-};
-
 export type MenuInput = {
   menu: Scalars['String'];
   price: Scalars['Int'];
@@ -41,29 +28,42 @@ export type MenuRecord = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addNewMenu: MenuRecord;
-  addNewOrder: Customer;
+  createMenu: MenuRecord;
+  createOrder: Order;
 };
 
 
-export type MutationAddNewMenuArgs = {
+export type MutationCreateMenuArgs = {
   input?: InputMaybe<MenuInput>;
 };
 
 
-export type MutationAddNewOrderArgs = {
-  input?: InputMaybe<CustomerInput>;
+export type MutationCreateOrderArgs = {
+  input?: InputMaybe<OrderInput>;
+};
+
+export type Order = {
+  __typename?: 'Order';
+  id: Scalars['Int'];
+  menu: Scalars['String'];
+  orderedAt: Scalars['String'];
+  price: Scalars['Int'];
+};
+
+export type OrderInput = {
+  menu: Scalars['String'];
+  price: Scalars['Int'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  getAllMenu: Array<MenuRecord>;
-  getAllOrder: Array<Customer>;
-  getMenuById: MenuRecord;
-  getOrderById: Customer;
+  getMenu: MenuRecord;
+  getOrder: Order;
+  listMenu: Array<MenuRecord>;
+  listOrder: Array<Order>;
 };
 
-export type Get_All_MenuQueryVariables = Exact<{ [key: string]: never; }>;
+export type Get_Menu_ListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Get_All_MenuQuery = { __typename?: 'Query', getAllMenu: Array<{ __typename?: 'MenuRecord', id: number, menu: string, price: number, stock: number }> };
+export type Get_Menu_ListQuery = { __typename?: 'Query', listMenu: Array<{ __typename?: 'MenuRecord', id: number, menu: string, price: number, stock: number }> };

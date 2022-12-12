@@ -1,5 +1,6 @@
-query get_all_menu {
-    getAllMenu {
+query get_menu_list {
+    listMenu {
+        id
         menu
         price
         stock

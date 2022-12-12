@@ -1,8 +1,11 @@
 type Query {
-  getAllMenu: [MenuRecord!]!
-  getMenuById: MenuRecord!
-  getAllOrder: [Customer!]!
-  getOrderById: Customer!
+  listMenu: [MenuRecord!]!
+
+  getMenu: MenuRecord!
+
+  listOrder: [Order!]!
+
+  getOrder: Order!
 }
 
 type MenuRecord {
@@ -12,7 +15,7 @@ type MenuRecord {
   stock: Int!
 }
 
-type Customer {
+type Order {
   id: Int!
   menu: String!
   price: Int!
@@ -20,11 +23,12 @@ type Customer {
 }
 
 type Mutation {
-  addNewOrder(input: CustomerInput): Customer!
-  addNewMenu(input: MenuInput): MenuRecord!
+  createOrder(input: OrderInput): Order!
+
+  createMenu(input: MenuInput): MenuRecord!
 }
 
-input CustomerInput {
+input OrderInput {
   menu: String!
   price: Int!
 }
@@ -40,7 +44,3 @@ schema {
 
   mutation: Mutation
 }
-
-
-
-

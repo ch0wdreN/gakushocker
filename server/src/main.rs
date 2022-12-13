@@ -48,9 +48,6 @@ async fn main() {
             "http://localhost:3000"
                 .parse::<http::HeaderValue>()
                 .unwrap(),
-            "http://127.0.0.1:3000"
-                .parse::<http::HeaderValue>()
-                .unwrap(),
             "http://localhost:8080"
                 .parse::<http::HeaderValue>()
                 .unwrap(),

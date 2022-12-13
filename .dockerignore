@@ -1,7 +1,9 @@
 .git
 server/target
+server/schema.sql
 table.drawio
 .idea
+app/dist
 app/node_modules
 app/yarn.lock
 README.md

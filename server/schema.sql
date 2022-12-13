@@ -1,4 +1,4 @@
-create table customer (
+create table orders (
   id serial not null primary key
   , menu varchar(16) not null
   , price int not null

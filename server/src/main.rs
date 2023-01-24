@@ -33,7 +33,7 @@ async fn main() {
     dotenv().ok();
     let db_url = std::env::var("DATABASE_URL").unwrap();
     let db = PgPoolOptions::new()
-        .max_connections(5)
+        .max_connections(200)
         .connect(&db_url)
         .await
         .unwrap();

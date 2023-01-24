@@ -10,9 +10,10 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  NaiveDateTime: any;
 };
 
-export type MenuInput = {
+export type Menu = {
   menu: Scalars['String'];
   price: Scalars['Int'];
   stock: Scalars['Int'];
@@ -34,19 +35,19 @@ export type Mutation = {
 
 
 export type MutationCreateMenuArgs = {
-  input?: InputMaybe<MenuInput>;
+  input: Menu;
 };
 
 
 export type MutationCreateOrderArgs = {
-  input?: InputMaybe<OrderInput>;
+  input: OrderInput;
 };
 
 export type Order = {
   __typename?: 'Order';
   id: Scalars['Int'];
   menu: Scalars['String'];
-  orderedAt: Scalars['String'];
+  orderedAt: Scalars['NaiveDateTime'];
   price: Scalars['Int'];
 };
 
@@ -62,6 +63,23 @@ export type Query = {
   listMenu: Array<MenuRecord>;
   listOrder: Array<Order>;
 };
+
+
+export type QueryGetMenuArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryGetOrderArgs = {
+  id: Scalars['Int'];
+};
+
+export type Get_Menu_By_IdQueryVariables = Exact<{
+  path: Scalars['Int'];
+}>;
+
+
+export type Get_Menu_By_IdQuery = { __typename?: 'Query', getMenu: { __typename?: 'MenuRecord', id: number, menu: string, price: number, stock: number } };
 
 export type Get_Menu_ListQueryVariables = Exact<{ [key: string]: never; }>;
 

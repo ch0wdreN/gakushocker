@@ -1,11 +1,11 @@
 type Query {
   listMenu: [MenuRecord!]!
 
-  getMenu: MenuRecord!
+  getMenu(id: Int!): MenuRecord!
 
   listOrder: [Order!]!
 
-  getOrder: Order!
+  getOrder(id: Int!): Order!
 }
 
 type MenuRecord {

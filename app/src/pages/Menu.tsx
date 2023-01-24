@@ -25,7 +25,7 @@ interface Order {
 const Menu: Component = () => {
   const [isOrder, setIsOrder] = createSignal(false);
   const [orders, setOrders] = createStore<Order[]>([]);
-  const [data, { refetch }] = client<Get_Menu_ListQuery>(listMenuDocument);
+  const [data] = client<Get_Menu_ListQuery>(listMenuDocument);
   return (
     <>
       <div>
@@ -35,13 +35,7 @@ const Menu: Component = () => {
             <div class="flex flex-wrap -m-4">
               <For each={data()?.listMenu}>
                 {(menu: MenuRecord) => {
-                  return (
-                    <Card
-                      menu={menu.menu}
-                      stock={menu.stock}
-                      price={menu.price}
-                    />
-                  );
+                  return <Card {...menu} />;
                 }}
               </For>
             </div>

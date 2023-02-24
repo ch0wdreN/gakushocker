@@ -1,7 +1,7 @@
 query get_menu_list {
-    listMenu {
+    listProduct {
         id
-        menu
+        name
         price
         stock
     }

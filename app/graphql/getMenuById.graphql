@@ -1,8 +1,0 @@
-query get_menu_by_id($path: Int!) {
-    getMenu(id: $path) {
-        id
-        menu
-        price
-        stock
-    }
-}

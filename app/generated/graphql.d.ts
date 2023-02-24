@@ -13,29 +13,11 @@ export type Scalars = {
   NaiveDateTime: any;
 };
 
-export type Menu = {
-  menu: Scalars['String'];
-  price: Scalars['Int'];
-  stock: Scalars['Int'];
-};
-
-export type MenuRecord = {
-  __typename?: 'MenuRecord';
-  id: Scalars['Int'];
-  menu: Scalars['String'];
-  price: Scalars['Int'];
-  stock: Scalars['Int'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
-  createMenu: MenuRecord;
   createOrder: Order;
-};
-
-
-export type MutationCreateMenuArgs = {
-  input: Menu;
+  createProduct: Product;
+  createUser: User;
 };
 
 
@@ -43,45 +25,70 @@ export type MutationCreateOrderArgs = {
   input: OrderInput;
 };
 
+
+export type MutationCreateProductArgs = {
+  input: ProductInput;
+};
+
+
+export type MutationCreateUserArgs = {
+  input: UserInput;
+};
+
 export type Order = {
   __typename?: 'Order';
+  createdAt: Scalars['NaiveDateTime'];
   id: Scalars['Int'];
-  menu: Scalars['String'];
-  orderedAt: Scalars['NaiveDateTime'];
-  price: Scalars['Int'];
+  status: Scalars['String'];
+  total: Scalars['Int'];
+  userId: Scalars['Int'];
 };
 
 export type OrderInput = {
-  menu: Scalars['String'];
+  id: Scalars['Int'];
+  status: Scalars['String'];
+  total: Scalars['Int'];
+  userId: Scalars['Int'];
+};
+
+export type Product = {
+  __typename?: 'Product';
+  id: Scalars['Int'];
+  name: Scalars['String'];
   price: Scalars['Int'];
+  stock: Scalars['Int'];
+};
+
+export type ProductInput = {
+  name: Scalars['String'];
+  price: Scalars['Int'];
+  stock: Scalars['Int'];
 };
 
 export type Query = {
   __typename?: 'Query';
-  getMenu: MenuRecord;
-  getOrder: Order;
-  listMenu: Array<MenuRecord>;
   listOrder: Array<Order>;
+  listProduct: Array<Product>;
+  listUser: Array<User>;
 };
 
-
-export type QueryGetMenuArgs = {
+export type User = {
+  __typename?: 'User';
+  displayName: Scalars['String'];
+  email: Scalars['String'];
   id: Scalars['Int'];
+  password: Scalars['String'];
+  point: Scalars['Int'];
 };
 
-
-export type QueryGetOrderArgs = {
-  id: Scalars['Int'];
+export type UserInput = {
+  displayName: Scalars['String'];
+  email: Scalars['String'];
+  password: Scalars['String'];
+  point: Scalars['Int'];
 };
-
-export type Get_Menu_By_IdQueryVariables = Exact<{
-  path: Scalars['Int'];
-}>;
-
-
-export type Get_Menu_By_IdQuery = { __typename?: 'Query', getMenu: { __typename?: 'MenuRecord', id: number, menu: string, price: number, stock: number } };
 
 export type Get_Menu_ListQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Get_Menu_ListQuery = { __typename?: 'Query', listMenu: Array<{ __typename?: 'MenuRecord', id: number, menu: string, price: number, stock: number }> };
+export type Get_Menu_ListQuery = { __typename?: 'Query', listProduct: Array<{ __typename?: 'Product', id: number, name: string, price: number, stock: number }> };

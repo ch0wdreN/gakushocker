@@ -1,15 +1,15 @@
 import { Component, createSignal, For } from 'solid-js';
 import { createGraphQLClient, gql } from '@solid-primitives/graphql';
-import { Get_Menu_ListQuery, MenuRecord } from '../../generated/graphql';
+import { Get_Menu_ListQuery, Product } from '../../generated/graphql';
 import Card from '~/component/Card';
 import { createStore } from 'solid-js/store';
 
 const API_URL = 'http://localhost:8080';
 const listMenuDocument = gql`
   query get_all_menu {
-    listMenu {
+    listProduct {
       id
-      menu
+      name
       price
       stock
     }
@@ -33,8 +33,8 @@ const Menu: Component = () => {
         <section class="text-gray-600 body-font">
           <div class="container px-5 py-24 mx-auto">
             <div class="flex flex-wrap -m-4">
-              <For each={data()?.listMenu}>
-                {(menu: MenuRecord) => {
+              <For each={data()?.listProduct}>
+                {(menu: Product) => {
                   return <Card {...menu} />;
                 }}
               </For>

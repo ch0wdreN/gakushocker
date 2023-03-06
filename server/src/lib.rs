@@ -10,14 +10,19 @@ mod entities {
 
 pub mod controllers {
     pub mod router;
-}
-
-mod presenters {
-    pub mod mutation;
-    pub mod query;
+    mod presenters {
+        pub mod mutation;
+        pub mod query;
+    }
 }
 
 mod repositories {
+    pub mod order;
+    pub mod product;
+    pub mod user;
+}
+
+mod repository_impl {
     pub mod order;
     pub mod product;
     pub mod user;

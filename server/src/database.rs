@@ -1,9 +1,9 @@
 use crate::constants;
-use crate::repositories::order::OrdersImpl;
-use crate::repositories::product::ProductsImpl;
-use crate::repositories::user::UsersImpl;
+use crate::repository_impl::order::OrdersImpl;
+use crate::repository_impl::product::ProductsImpl;
+use crate::repository_impl::user::UsersImpl;
 use sqlx::postgres::PgPoolOptions;
-use sqlx::{PgPool, Pool, Postgres};
+use sqlx::{Pool, Postgres};
 
 pub type ConnectionPool = Pool<Postgres>;
 
@@ -22,7 +22,7 @@ impl RepositoryProvider {
     }
 }
 
-pub async fn db_pool() -> PgPool {
+pub async fn db_pool() -> ConnectionPool {
     let db_url = constants::db_url();
     PgPoolOptions::new()
         .max_connections(200)

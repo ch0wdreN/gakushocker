@@ -1,0 +1,8 @@
+query find_product_by_id($path: Int!) {
+    findProductById(id: $path) {
+        id
+        name
+        price
+        stock
+    }
+}

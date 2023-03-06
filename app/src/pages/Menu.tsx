@@ -1,8 +1,11 @@
 import { Component, createSignal, For } from 'solid-js';
 import { createGraphQLClient, gql } from '@solid-primitives/graphql';
-import { Get_Menu_ListQuery, Product } from '../../generated/graphql';
+import {
+  Get_Menu_ListQuery,
+  Product,
+  Find_Product_By_IdQuery,
+} from '../../generated/graphql';
 import Card from '~/component/Card';
-import { createStore } from 'solid-js/store';
 
 const API_URL = 'http://localhost:8080';
 const listMenuDocument = gql`
@@ -24,8 +27,8 @@ interface Order {
 
 const Menu: Component = () => {
   const [isOrder, setIsOrder] = createSignal(false);
-  const [orders, setOrders] = createStore<Order[]>([]);
   const [data] = client<Get_Menu_ListQuery>(listMenuDocument);
+  console.dir(JSON.stringify(data.state));
   return (
     <>
       <div>

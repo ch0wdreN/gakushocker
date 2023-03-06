@@ -11,6 +11,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   NaiveDateTime: any;
+  UUID: any;
 };
 
 export type Mutation = {
@@ -18,6 +19,9 @@ export type Mutation = {
   createOrder: Order;
   createProduct: Product;
   createUser: User;
+  deleteOrder: Order;
+  deleteProduct: Product;
+  deleteUser: User;
 };
 
 
@@ -35,20 +39,49 @@ export type MutationCreateUserArgs = {
   input: UserInput;
 };
 
+
+export type MutationDeleteOrderArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type MutationDeleteProductArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type MutationDeleteUserArgs = {
+  id: Scalars['Int'];
+};
+
 export type Order = {
   __typename?: 'Order';
   createdAt: Scalars['NaiveDateTime'];
-  id: Scalars['Int'];
+  id: Scalars['UUID'];
+  items: Array<OrderItem>;
   status: Scalars['String'];
   total: Scalars['Int'];
   userId: Scalars['Int'];
 };
 
 export type OrderInput = {
-  id: Scalars['Int'];
+  id: Scalars['UUID'];
+  items: Array<OrderItemInput>;
   status: Scalars['String'];
   total: Scalars['Int'];
   userId: Scalars['Int'];
+};
+
+export type OrderItem = {
+  __typename?: 'OrderItem';
+  name: Scalars['String'];
+  price: Scalars['Int'];
+  quantity: Scalars['Int'];
+};
+
+export type OrderItemInput = {
+  productId: Scalars['Int'];
+  quantity: Scalars['Int'];
 };
 
 export type Product = {
@@ -67,9 +100,28 @@ export type ProductInput = {
 
 export type Query = {
   __typename?: 'Query';
+  findAllOrder: Array<Order>;
+  findOrderById: Order;
+  findProductById: Product;
+  findUserByEmail: User;
   listOrder: Array<Order>;
   listProduct: Array<Product>;
   listUser: Array<User>;
+};
+
+
+export type QueryFindOrderByIdArgs = {
+  id: Scalars['UUID'];
+};
+
+
+export type QueryFindProductByIdArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type QueryFindUserByEmailArgs = {
+  email: Scalars['String'];
 };
 
 export type User = {
@@ -87,6 +139,13 @@ export type UserInput = {
   password: Scalars['String'];
   point: Scalars['Int'];
 };
+
+export type Find_Product_By_IdQueryVariables = Exact<{
+  path: Scalars['Int'];
+}>;
+
+
+export type Find_Product_By_IdQuery = { __typename?: 'Query', findProductById: { __typename?: 'Product', id: number, name: string, price: number, stock: number } };
 
 export type Get_Menu_ListQueryVariables = Exact<{ [key: string]: never; }>;
 

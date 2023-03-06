@@ -1,29 +1,28 @@
 import { Component } from 'solid-js';
 import { useParams } from '@solidjs/router';
 import { createGraphQLClient, gql } from '@solid-primitives/graphql';
-import { Get_Menu_By_IdQuery } from '../../generated/graphql';
+import { Find_Product_By_IdQuery } from '../../generated/graphql';
 
 const API_URL = 'http://localhost:8080';
 const getMenuDocument = gql`
   query get_menu_by_id($path: Int!) {
-    getMenu(id: $path) {
+    findProductById(id: $path) {
       id
-      menu
+      name
       price
       stock
     }
   }
 `;
+const client = createGraphQLClient(API_URL);
 
 const Item: Component = () => {
   const param = useParams();
-  console.log(param.id);
-  const client = createGraphQLClient(API_URL);
-  const [data] = client<Get_Menu_By_IdQuery>(getMenuDocument, {
-    path: param.id,
+  const [data] = client<Find_Product_By_IdQuery>(getMenuDocument, {
+    path: Number(param.id),
   });
 
-  console.log(JSON.stringify(data()?.getMenu));
+  console.log(JSON.stringify(data.state));
   return (
     <>
       <div class="container px-5 py-24 mx-auto">
@@ -38,10 +37,10 @@ const Item: Component = () => {
           </div>
           <div class="mt-4">
             <h2 class="text-gray-900 title-font text-lg font-medium">
-              {data()?.getMenu.menu}
+              {data()?.findProductById.name}
             </h2>
-            <p class="mt-1">￥{data()?.getMenu.price}</p>
-            <p class="mt-1">残り{data()?.getMenu.stock}</p>
+            <p class="mt-1">￥{data()?.findProductById.price}</p>
+            <p class="mt-1">残り{data()?.findProductById.stock}</p>
           </div>
         </div>
       </div>

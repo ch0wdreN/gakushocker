@@ -1,7 +1,7 @@
+use crate::controllers::presenters::mutation::Mutation;
+use crate::controllers::presenters::query::Query;
 use crate::database;
 use crate::database::RepositoryProvider;
-use crate::presenters::mutation::Mutation;
-use crate::presenters::query::Query;
 use async_graphql::{http::GraphiQLSource, EmptySubscription, Request, Response, Schema};
 use axum::{
     extract::State,

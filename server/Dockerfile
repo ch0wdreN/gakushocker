@@ -1,4 +1,4 @@
-FROM rustlang/rust:nightly as build
+FROM rustlang/rust:nightly-slim as build
 WORKDIR /app
 RUN apt-get update -y && apt-get upgrade -y
 
@@ -7,5 +7,10 @@ COPY ./server/Cargo.lock ./Cargo.lock
 COPY ./server/src ./src
 
 EXPOSE 8080
-RUN cargo install cargo-watch
-CMD ["cargo", "watch", "-x", "run", "-w", "src"]
+RUN cargo build --release
+
+FROM gcr.io/distroless/cc
+
+COPY --from=build /app/target/release/server .
+
+CMD ["./server"]

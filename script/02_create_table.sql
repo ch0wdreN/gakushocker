@@ -10,7 +10,7 @@ CREATE TABLE users (
 
 CREATE TABLE products (
     id serial PRIMARY KEY,
-    name varchar(256) NOT NULL,
+    name varchar(256) UNIQUE NOT NULL,
     price int NOT NULL,
     stock int NOT NULL
 );

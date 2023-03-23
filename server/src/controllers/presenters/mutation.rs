@@ -32,7 +32,7 @@ impl Mutation {
         input: ProductInput,
     ) -> Result<Product, Error> {
         let repo = ctx.data::<RepositoryProvider>().unwrap();
-        product::create(repo, input).await
+        product::save(repo, input).await
     }
 
     async fn delete_product(&self, ctx: &Context<'_>, id: i32) -> Result<Product, Error> {
@@ -42,7 +42,7 @@ impl Mutation {
 
     async fn create_user(&self, ctx: &Context<'_>, input: UserInput) -> Result<User, Error> {
         let repo = ctx.data::<RepositoryProvider>().unwrap();
-        user::create(repo, input).await
+        user::save(repo, input).await
     }
 
     async fn delete_user(&self, ctx: &Context<'_>, id: i32) -> Result<User, Error> {

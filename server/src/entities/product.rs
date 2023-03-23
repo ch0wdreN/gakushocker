@@ -1,7 +1,7 @@
 use async_graphql::SimpleObject;
 use sqlx::FromRow;
 
-#[derive(FromRow, Clone, SimpleObject)]
+#[derive(FromRow, Clone, SimpleObject, PartialEq, Debug)]
 pub struct Product {
     pub id: i32,
     pub name: String,

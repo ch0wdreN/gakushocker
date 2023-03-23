@@ -33,15 +33,21 @@ impl<'a> ProductsRepository for ProductsImpl<'a> {
             RETURNING
                 id, name, price, stock;
         "#;
-        let tx = pool.begin().await.unwrap();
-        let saved_product = sqlx::query_as(&sql)
+        let mut tx = pool.begin().await?;
+        let saved_product: Product = match sqlx::query_as(&sql)
             .bind(input.name)
             .bind(input.price)
             .bind(input.stock)
-            .fetch_one(pool)
-            .await;
-        tx.commit().await.unwrap();
-        saved_product
+            .fetch_one(&mut tx)
+            .await {
+            Ok(p) => p,
+            Err(_) => {
+                tx.rollback().await?;
+                return Err(Error::RowNotFound);
+            }
+        };
+        tx.commit().await?;
+        Ok(saved_product)
     }
 
     async fn delete(&self, id: i32) -> Result<Product, Error> {
@@ -54,10 +60,16 @@ impl<'a> ProductsRepository for ProductsImpl<'a> {
             RETURNING
                 id, name, price, stock;
         "#;
-        let tx = pool.begin().await.unwrap();
-        let deleted_product = sqlx::query_as(&sql).bind(id).fetch_one(pool).await;
+        let mut tx = pool.begin().await.unwrap();
+        let deleted_product: Product = match sqlx::query_as(&sql).bind(id).fetch_one(&mut tx).await {
+            Ok(p) => p,
+            Err(_) => {
+                tx.rollback().await?;
+                return Err(Error::RowNotFound);
+            }
+        };
         tx.commit().await.unwrap();
-        deleted_product
+        Ok(deleted_product)
     }
 
     async fn list(&self) -> Result<Vec<Product>, Error> {
@@ -65,5 +77,44 @@ impl<'a> ProductsRepository for ProductsImpl<'a> {
         let sql = "SELECT * FROM products";
         let products = sqlx::query_as(&sql).fetch_all(pool).await;
         products
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::database::db_pool;
+
+    #[tokio::test]
+    async fn test_product_repository() -> Result<(), Error> {
+        let pool = db_pool().await;
+        let product_impl = ProductsImpl { pool: &pool };
+        let product_input = ProductInput {
+            name: "example定食".to_string(),
+            price: 400,
+            stock: 100,
+        };
+        let tx = pool.begin().await.unwrap();
+
+        let saved_product = product_impl.save(product_input).await?;
+        let expected_product = Product {
+            id: saved_product.id,
+            name: "example定食".to_string(),
+            price: 400,
+            stock: 100,
+        };
+        assert_eq!(expected_product, saved_product);
+
+        let expected_found_product = expected_product;
+        let all_product = product_impl.list().await?;
+        let found_product = all_product
+            .into_iter()
+            .find(|product| product.id == expected_found_product.id);
+        assert!(found_product.is_some());
+
+        let expected_deleted_product = expected_found_product;
+        let deleted_product = product_impl.delete(saved_product.id).await?;
+        assert_eq!(expected_deleted_product, deleted_product);
+        Ok(())
     }
 }

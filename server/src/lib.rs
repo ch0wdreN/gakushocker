@@ -14,6 +14,9 @@ pub mod controllers {
         pub mod mutation;
         pub mod query;
     }
+    mod auth {
+        pub mod auth;
+    }
 }
 
 mod repositories {
@@ -39,5 +42,9 @@ pub mod constants {
     pub fn db_url() -> String {
         dotenv().ok();
         std::env::var("DATABASE_URL").expect("Missing DATABASE_URL")
+    }
+    pub fn secret_key() -> String {
+        dotenv().ok();
+        std::env::var("SECRET").expect("Missing SECRET")
     }
 }

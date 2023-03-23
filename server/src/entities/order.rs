@@ -4,7 +4,7 @@ use sqlx::postgres::{PgHasArrayType, PgTypeInfo};
 use sqlx::{FromRow, Type};
 use uuid::Uuid;
 
-#[derive(FromRow, Clone, SimpleObject)]
+#[derive(FromRow, Clone, SimpleObject, Debug, PartialEq)]
 pub struct Order {
     pub id: Uuid,
     pub user_id: i32,
@@ -14,7 +14,7 @@ pub struct Order {
     pub status: String,
 }
 
-#[derive(FromRow, Clone, SimpleObject, Type)]
+#[derive(FromRow, Clone, SimpleObject, Type, Debug, PartialEq)]
 pub struct OrderItem {
     pub name: String,
     pub price: i32,

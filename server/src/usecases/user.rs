@@ -4,7 +4,7 @@ use crate::repositories::user::UsersRepository;
 use crate::repository_impl::user::UserInput;
 use sqlx::Error;
 
-pub async fn create(repo: &RepositoryProvider, input: UserInput) -> Result<User, Error> {
+pub async fn save(repo: &RepositoryProvider, input: UserInput) -> Result<User, Error> {
     let users = repo.users();
     users.save(input).await
 }
@@ -19,12 +19,25 @@ pub async fn list_user(repo: &RepositoryProvider) -> Result<Vec<User>, Error> {
     users.list().await
 }
 
-pub async fn find_user_by_email(repo: &RepositoryProvider, email: String) -> User {
+pub async fn find_user_by_email(
+    repo: &RepositoryProvider,
+    email: String,
+) -> Result<Option<User>, Error> {
     let users = repo.users();
-    let all_user = users.list().await.unwrap();
+    let all_user = users.list().await?;
+    let user = all_user.into_iter().find(|user| user.email == email);
+    Ok(user)
+}
+
+pub async fn find_user_by_user_id(repo: &RepositoryProvider, id: i32) -> Result<User, Error> {
+    let users = repo.users();
+    let all_user = users.list().await?;
     let user = all_user
         .into_iter()
-        .filter(|user| user.email == email)
+        .filter(|user| user.id == id)
         .collect::<Vec<User>>();
-    user[0].clone()
+    if user.len() == 0 {
+        return Err(Error::RowNotFound);
+    }
+    Ok(user[0].clone())
 }

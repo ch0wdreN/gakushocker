@@ -6,6 +6,7 @@ yarn.lock
 node_modules
 package-lock.json
 yarn-error.log
+pnpm-lock.yaml
 
 target/
 debug/
@@ -18,4 +19,5 @@ Cargo.lock
 .vim/
 
 .env
+.env_server
 

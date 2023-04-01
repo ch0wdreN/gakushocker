@@ -65,4 +65,4 @@ INSERT INTO products (name, price, stock)
 
 INSERT INTO users
     VALUES
-        (1, 'example_user', 'ex@example.com', 'passw0rd', 100);
+        (1, 'demo', 'demo', 'demo', 100);

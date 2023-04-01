@@ -1,0 +1,8 @@
+query listProduct {
+    listProduct {
+        id
+        name
+        price
+        stock
+    }
+}

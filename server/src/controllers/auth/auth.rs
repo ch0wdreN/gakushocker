@@ -66,8 +66,7 @@ impl Claims {
         let timestamp = Utc::now().timestamp();
         Claims {
             sub: "token".to_string(),
-            //exp: timestamp + (3600 * 4),
-            exp: timestamp + 120,
+            exp: timestamp + (3600 * 4),
             email,
         }
     }

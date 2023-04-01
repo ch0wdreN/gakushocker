@@ -1,8 +1,0 @@
-query get_menu_list {
-    listProduct {
-        id
-        name
-        price
-        stock
-    }
-}

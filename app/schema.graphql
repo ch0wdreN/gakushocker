@@ -1,0 +1,101 @@
+type Mutation {
+    createOrder(input: OrderInput!): Order!
+    deleteOrder(id: UUID!): Order!
+    createProduct(input: ProductInput!): Product!
+    deleteProduct(id: Int!): Product!
+    createUser(input: UserInput!): User!
+    deleteUser(id: Int!): User!
+}
+
+"""
+ISO 8601 combined date and time without timezone.
+
+# Examples
+
+* `2015-07-01T08:59:60.123`,
+"""
+scalar NaiveDateTime
+
+type Order {
+    id: UUID!
+    userId: Int!
+    items: [OrderItem!]!
+    total: Int!
+    createdAt: NaiveDateTime!
+    status: String!
+}
+
+input OrderInput {
+    id: UUID!
+    userId: Int!
+    total: Int!
+    items: [OrderItemInput!]!
+    status: String!
+}
+
+type OrderItem {
+    name: String!
+    price: Int!
+    quantity: Int!
+}
+
+input OrderItemInput {
+    productId: Int!
+    quantity: Int!
+}
+
+type Product {
+    id: Int!
+    name: String!
+    price: Int!
+    stock: Int!
+}
+
+input ProductInput {
+    name: String!
+    price: Int!
+    stock: Int!
+}
+
+type Query {
+    listOrder: [Order!]!
+    findOrderById(id: UUID!): Order!
+    findAllOrder: [Order!]!
+    listProduct: [Product!]!
+    findProductById(id: Int!): Product!
+    listUser: [User!]!
+    findUserByEmail(email: String!): User!
+}
+
+
+"""
+A UUID is a unique 128-bit number, stored as 16 octets. UUIDs are parsed as
+Strings within GraphQL. UUIDs are used to assign unique identifiers to
+entities without requiring a central allocating authority.
+
+# References
+
+* [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
+* [RFC4122: A Universally Unique IDentifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
+"""
+scalar UUID
+
+type User {
+    id: Int!
+    displayName: String!
+    email: String!
+    password: String!
+    point: Int!
+}
+
+input UserInput {
+    displayName: String!
+    email: String!
+    password: String!
+    point: Int!
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+}

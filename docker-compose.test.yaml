@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: postgres
+    command: -c 'config_file=/etc/postgresql/postgresql.conf'
+    ports:
+      - "5430:5432"
+    volumes:
+      - db-store:/var/lib/postgresql/data
+      - ./script:/docker-entrypoint-initdb.d
+      - ./config/postgresql.conf:/etc/postgresql/postgresql.conf
+    environment:
+      - POSTGRES_PASSWORD=passw0rd
+    networks:
+      test-network:
+
+  api:
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+    container_name: api
+    volumes:
+      - ./server:/app
+      - cargo-cache:/usr/local/cargo/registry
+      - target-cache:/app/target
+    ports:
+      - "8080:8080"
+    env_file:
+      - server/.env.test
+    depends_on:
+      - postgres
+    restart: always
+    networks:
+      test-network:
+
+volumes:
+  db-store:
+  cargo-cache:
+  target-cache:
+
+networks:
+  test-network:
+    driver: bridge

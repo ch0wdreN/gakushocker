@@ -1,10 +1,8 @@
 use crate::database::RepositoryProvider;
-use crate::entities::order::Order;
+use crate::entities::order::{Order, OrderInput};
 use crate::entities::product::Product;
-use crate::entities::user::User;
-use crate::repository_impl::order::OrderInput;
+use crate::entities::user::{User, UserInput};
 use crate::repository_impl::product::ProductInput;
-use crate::repository_impl::user::UserInput;
 use crate::usecases::order;
 use crate::usecases::product;
 use crate::usecases::user;

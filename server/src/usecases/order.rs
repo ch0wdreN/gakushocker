@@ -1,9 +1,10 @@
 use crate::database::RepositoryProvider;
-use crate::entities::order::Order;
+use crate::entities::{
+    order::{Order, OrderInput},
+    user::UserInput,
+};
 use crate::repositories::order::OrdersRepository;
-use crate::repository_impl::order::{OrderInput, OrderItemInput};
 use crate::repository_impl::product::ProductInput;
-use crate::repository_impl::user::UserInput;
 use crate::usecases::product;
 use crate::usecases::user;
 use sqlx::Error;
@@ -16,6 +17,7 @@ pub async fn create(repo: &RepositoryProvider, input: OrderInput) -> Result<Orde
         email: found_user.email,
         password: found_user.password,
         point: found_user.point - input.total,
+        is_admin: found_user.is_admin,
     };
     user::save(repo, updated_user).await?;
     let orders = repo.orders();

@@ -1,17 +1,7 @@
 use crate::database::ConnectionPool;
-use crate::entities::user::User;
+use crate::entities::user::{User, UserInput};
 use crate::repositories::user::UsersRepository;
-use async_graphql::InputObject;
-use serde::Deserialize;
 use sqlx::Error;
-
-#[derive(InputObject, Deserialize)]
-pub struct UserInput {
-    pub display_name: String,
-    pub email: String,
-    pub password: String,
-    pub point: i32,
-}
 
 pub struct UsersImpl<'a> {
     pub pool: &'a ConnectionPool,
@@ -23,18 +13,19 @@ impl<'a> UsersRepository for UsersImpl<'a> {
         let pool = self.pool;
         let sql = r#"
             INSERT INTO
-                users (display_name, email, password, point)
+                users (display_name, email, password, point, is_admin)
             VALUES
-                ($1, $2, $3, $4)
+                ($1, $2, $3, $4, $5)
             ON CONFLICT
                 (email)
             DO UPDATE SET
                 display_name=EXCLUDED.display_name,
                 email=EXCLUDED.email,
                 password=EXCLUDED.password,
-                point=EXCLUDED.point
+                point=EXCLUDED.point,
+                is_admin=EXCLUDED.is_admin
             RETURNING
-                id, display_name, email, password, point
+                id, display_name, email, password, point, is_admin
         "#;
         let mut tx = pool.begin().await?;
         let saved_user: User = match sqlx::query_as(&sql)
@@ -42,8 +33,10 @@ impl<'a> UsersRepository for UsersImpl<'a> {
             .bind(input.email)
             .bind(input.password)
             .bind(input.point)
+            .bind(input.is_admin)
             .fetch_one(&mut tx)
-            .await {
+            .await
+        {
             Ok(u) => u,
             Err(_) => {
                 tx.rollback().await?;
@@ -62,7 +55,7 @@ impl<'a> UsersRepository for UsersImpl<'a> {
             WHERE
                 id=$1
             RETURNING
-                id, display_name, email, password, point
+                id, display_name, email, password, point, is_admin
         "#;
         let mut tx = pool.begin().await?;
         let deleted_user: User = match sqlx::query_as(&sql).bind(id).fetch_one(&mut tx).await {
@@ -88,7 +81,6 @@ impl<'a> UsersRepository for UsersImpl<'a> {
 mod tests {
     use super::*;
     use crate::database::db_pool;
-    use crate::usecases::order::delete;
 
     #[tokio::test]
     async fn test_user_repository() -> Result<(), Error> {
@@ -99,8 +91,8 @@ mod tests {
             email: "test@email.com".to_string(),
             password: "password".to_string(),
             point: 0,
+            is_admin: false,
         };
-
         let tx = pool.begin().await?;
         let saved_user = user_impl.save(user).await?;
         let expected_user = User {
@@ -109,6 +101,7 @@ mod tests {
             email: "test@email.com".to_string(),
             password: "password".to_string(),
             point: 0,
+            is_admin: false,
         };
         assert_eq!(expected_user, saved_user);
         let all_user = user_impl.list().await?;
@@ -120,6 +113,7 @@ mod tests {
         let expect_delete_user = expect_found_user;
         let deleted_user = user_impl.delete(saved_user.id).await?;
         assert_eq!(expect_delete_user, deleted_user);
+        tx.rollback().await?;
         Ok(())
     }
 }

@@ -57,17 +57,5 @@ async fn graphql() -> impl IntoResponse {
 }
 
 fn cors() -> CorsLayer {
-    // CorsLayer::new()
-    //     .allow_methods(vec![Method::GET, Method::POST, Method::OPTIONS])
-    //     .allow_origin(vec![
-    //         "http://localhost".parse::<http::HeaderValue>().unwrap(),
-    //         "http://localhost:3000"
-    //             .parse::<http::HeaderValue>()
-    //             .unwrap(),
-    //         "http://localhost:8080"
-    //             .parse::<http::HeaderValue>()
-    //             .unwrap(),
-    //     ])
-    //     .allow_headers(Any)
     CorsLayer::very_permissive()
 }

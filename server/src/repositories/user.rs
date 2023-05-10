@@ -1,5 +1,4 @@
-use crate::entities::user::User;
-use crate::repository_impl::user::UserInput;
+use crate::entities::user::{User, UserInput};
 use sqlx::Error;
 
 #[axum::async_trait]

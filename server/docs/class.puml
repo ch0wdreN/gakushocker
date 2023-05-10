@@ -1,0 +1,138 @@
+@startuml
+
+package Entities {
+    class Order <<Structure>> {
+        + id: Uuid
+        + user_id: i32
+        + items: Vec<OrderItem>
+        + total: i32
+        + created_at: NaiveDateTime
+        + status: String
+    }
+
+    class OrderItem <<Structure>> {
+        + name: String
+        + price: i32
+        + quantity: i32
+    }
+
+    Order <.. OrderItem
+
+    class Product <<Structure>> {
+        + id: i32
+        + name: String
+        + price: i32
+        + stock: i32
+    }
+    class User <<Structure>> {
+        + id: i32
+        + display_name: String
+        + email: String
+        + password: String
+        + point: i32
+    }
+}
+
+hide class circle
+hide class empty members
+
+package Controllers {
+    package auth {
+        class auth {
+            + auth_router() -> Router
+            - sign_in(jar: CookieJar, Json(payload): Json<SignedUser>) -> Result<(CookieJar, Json<User>), AuthError>
+            - sign_up(jar: CookieJar, Json(payload): Json<SignedUser>) -> Result<(CookieJar, Json<User>), AuthError>
+            + validation_token(token: String) -> bool
+        }
+    }
+    package presenters {
+        class Mutation {
+            create_order(&self, ctx: &Context, input: OrderInput) -> Result<Order, Error>
+            delete_order(&self, ctx: &Context, id: Uuid) -> Result<Order, Error>
+            create_product(&self, ctx: &Context, input: ProductInput) -> Result<Product, Error>
+            delete_product(&self, ctx: &Context, id: i32) -> Result<Product, Error>
+            create_user(&self, ctx: &Context, input: UserInput) -> Result<User, Error>
+            delete_user(&self, ctx: &Context, id: i32) -> Result<User, Error>
+        }
+        class Query {
+            list_order(&self, ctx: &Context) -> Result<Vec<Order>, Error>
+            find_order_by_id(&self, ctx: &Context, id: Uuid) -> Result<Option<Order>, Error>
+            list_product(&self, ctx: &Context) -> Result<Vec<Product>, Error>
+            find_product_by_id(&self, ctx: &Context, id: i32) -> Result<Option<Product>, Error>
+            list_user(&self, ctx: &Context) -> Result<Vec<User>, Error>
+            find_user_by_email(&self, ctx: &Context, email: String) -> Result<Option<User>, Error>
+        }
+    }
+    class router {
+        + root() -> Router
+        - cors() -> CorsLayer
+        - graphql_handler(schema: State<Schema>, jar: CookieJar, req: Json<Request>)  -> Result<Json<Response>, StatusCode>
+        - graphql() -> impl IntoResponse
+    }
+    router <. auth
+    router <.. presenters
+}
+
+package Usecases {
+    class order {
+        + create(repo: &RepositoryProvider, input: OrderInput) -> Result<Order, Error>
+        + delete(repo: &RepositoryProvider, id: Uuid) -> Result<Order, Error>
+        + find_order_by_id(repo: &RepositoryProvider, id: Uuid) -> Result<Option<Order>, Error>
+        + list_order(repo: &RepositoryProvider) -> Result<Vec<Order>, Error>
+    }
+
+    class product {
+        + save(repo: &RepositoryProvider, input: ProductInput) -> Result<Product, Error>
+        + delete(repo: &RepositoryProvider, id: i32) -> Result<Product, Error>
+        + find_product_by_id(repo: &RepositoryProvider, id: i32) -> Result<Option<Product>, Error>
+        + list_product(repo: &RepositoryProvider) -> Result<Vec<Product>, Error>
+    }
+
+    class user {
+        + save(repo: &RepositoryProvider, id: i32) -> Result<User, Error>
+        + delete_user(repo: &RepositoryProvider, id: i32) -> Result<User, Error>
+        + find_user_by_email(repo: &RepositoryProvider, email: String) -> Result<Option<User>, Error>
+        + find_user_by_user_id(repo: &RepositoryProvider, id: i32) -> Result<User, Error>
+    }
+}
+
+package Repositories {
+    interface OrderRepository <<Trait>> {
+        + save(&self, input: OrderInput) -> Result<Order, Error>
+        + delete(&self, id: Uuid) -> Result<Order, Error>
+        + list(&self) -> Result<Vec<Order>, Error>
+    }
+
+    interface ProductRepository <<Trait>> {
+        + save(&self, input: ProductInput) -> Result<Product, Error>
+        + delete(&self, id: i32) -> Result<Product, Error>
+        + list(&self) -> Result<Vec<Product>, Error>
+    }
+
+    interface UserRepository <<Trait>> {
+        + save(&self, input: UserInput) -> Result<User, Error>
+        + delete(&self, id: i32) -> Result<User, Error>
+        + list(&self) -> Result<Vec<User>, Error>
+    }
+
+    class OrderRepositoryImpl <<Impl>>
+    OrderRepository <|. OrderRepositoryImpl
+
+    class ProductRepositoryImpl <<Impl>>
+    ProductRepository <|. ProductRepositoryImpl
+
+    class UserRepositoryImpl <<Impl>>
+    UserRepository <|. UserRepositoryImpl
+}
+
+Usecases.order <.. OrderRepositoryImpl
+Usecases.product <.. ProductRepositoryImpl
+Usecases.user <.. UserRepositoryImpl
+
+Controllers.presenters <.. Usecases
+Controllers.auth <.. Usecases.user
+
+hide interface circle
+hide interface empty members
+
+@enduml

@@ -1,4 +1,4 @@
-use async_graphql::SimpleObject;
+use async_graphql::{InputObject, SimpleObject};
 use chrono::NaiveDateTime;
 use sqlx::postgres::{PgHasArrayType, PgTypeInfo};
 use sqlx::{FromRow, Type};
@@ -11,7 +11,6 @@ pub struct Order {
     pub items: Vec<OrderItem>,
     pub total: i32,
     pub created_at: NaiveDateTime,
-    pub status: String,
 }
 
 #[derive(FromRow, Clone, SimpleObject, Type, Debug, PartialEq)]
@@ -29,4 +28,26 @@ impl PgHasArrayType for OrderItem {
     fn array_compatible(_ty: &PgTypeInfo) -> bool {
         true
     }
+}
+
+#[derive(InputObject, Debug, Clone)]
+pub struct OrderInput {
+    pub id: Uuid,
+    pub user_id: i32,
+    pub total: i32,
+    pub items: Vec<OrderItemInput>,
+}
+
+#[derive(FromRow, InputObject, Debug, Clone)]
+pub struct OrderItemInput {
+    pub product_id: i32,
+    pub quantity: i32,
+}
+
+#[derive(FromRow)]
+pub struct OrderWithoutItems {
+    pub id: Uuid,
+    pub user_id: i32,
+    pub total: i32,
+    pub created_at: NaiveDateTime,
 }

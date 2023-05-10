@@ -27,7 +27,6 @@ impl<'a> ProductsRepository for ProductsImpl<'a> {
             ON CONFLICT
                 (name)
             DO UPDATE SET
-                name=EXCLUDED.name,
                 price=EXCLUDED.price,
                 stock=EXCLUDED.stock
             RETURNING
@@ -39,7 +38,8 @@ impl<'a> ProductsRepository for ProductsImpl<'a> {
             .bind(input.price)
             .bind(input.stock)
             .fetch_one(&mut tx)
-            .await {
+            .await
+        {
             Ok(p) => p,
             Err(_) => {
                 tx.rollback().await?;
@@ -61,7 +61,8 @@ impl<'a> ProductsRepository for ProductsImpl<'a> {
                 id, name, price, stock;
         "#;
         let mut tx = pool.begin().await.unwrap();
-        let deleted_product: Product = match sqlx::query_as(&sql).bind(id).fetch_one(&mut tx).await {
+        let deleted_product: Product = match sqlx::query_as(&sql).bind(id).fetch_one(&mut tx).await
+        {
             Ok(p) => p,
             Err(_) => {
                 tx.rollback().await?;
@@ -74,7 +75,7 @@ impl<'a> ProductsRepository for ProductsImpl<'a> {
 
     async fn list(&self) -> Result<Vec<Product>, Error> {
         let pool = self.pool;
-        let sql = "SELECT * FROM products";
+        let sql = "SELECT * FROM products ORDER BY id ASC";
         let products = sqlx::query_as(&sql).fetch_all(pool).await;
         products
     }
@@ -95,7 +96,6 @@ mod test {
             stock: 100,
         };
         let tx = pool.begin().await.unwrap();
-
         let saved_product = product_impl.save(product_input).await?;
         let expected_product = Product {
             id: saved_product.id,
@@ -104,7 +104,6 @@ mod test {
             stock: 100,
         };
         assert_eq!(expected_product, saved_product);
-
         let expected_found_product = expected_product;
         let all_product = product_impl.list().await?;
         let found_product = all_product
@@ -115,6 +114,7 @@ mod test {
         let expected_deleted_product = expected_found_product;
         let deleted_product = product_impl.delete(saved_product.id).await?;
         assert_eq!(expected_deleted_product, deleted_product);
+        tx.rollback().await?;
         Ok(())
     }
 }

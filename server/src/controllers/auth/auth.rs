@@ -1,8 +1,7 @@
 use crate::constants;
 use crate::database;
 use crate::database::RepositoryProvider;
-use crate::entities::user::User;
-use crate::repository_impl::user::UserInput;
+use crate::entities::user::{User, UserInput};
 use crate::usecases::user;
 use axum::routing::post;
 use axum::{
@@ -113,7 +112,7 @@ async fn sign_in(
     let authorized_user = match found_user {
         Some(user) => {
             if user.password != payload.password {
-                return Err(AuthError::WrongCredentials);
+                return Err(AuthError::InvalidToken);
             }
             user
         }

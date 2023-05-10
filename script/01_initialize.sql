@@ -1,5 +1,5 @@
-CREATE DATABASE example;
+CREATE DATABASE dev;
 
-\c example
+\c dev
 
 CREATE ROLE hoge WITH LOGIN PASSWORD 'passw0rd';

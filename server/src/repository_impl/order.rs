@@ -1,34 +1,8 @@
 use crate::database::ConnectionPool;
-use crate::entities::order::Order;
+use crate::entities::order::{Order, OrderInput, OrderWithoutItems};
 use crate::repositories::order::OrdersRepository;
-use async_graphql::InputObject;
-use sqlx::Error::Database;
-use sqlx::{Error, FromRow, Postgres, QueryBuilder};
+use sqlx::{Error, Postgres, QueryBuilder};
 use uuid::Uuid;
-
-#[derive(InputObject, Debug, Clone)]
-pub struct OrderInput {
-    pub id: Uuid,
-    pub user_id: i32,
-    pub total: i32,
-    pub items: Vec<OrderItemInput>,
-    pub status: String,
-}
-
-#[derive(FromRow, InputObject, Debug, Clone)]
-pub struct OrderItemInput {
-    pub product_id: i32,
-    pub quantity: i32,
-}
-
-#[derive(FromRow)]
-struct OrderWithoutItems {
-    id: Uuid,
-    user_id: i32,
-    total: i32,
-    status: String,
-    created_at: chrono::NaiveDateTime,
-}
 
 pub struct OrdersImpl<'a> {
     pub pool: &'a ConnectionPool,
@@ -40,21 +14,19 @@ impl<'a> OrdersRepository for OrdersImpl<'a> {
         let pool = self.pool;
         let sql = r#"
             INSERT INTO
-                orders (id, user_id, total, status)
+                orders (id, user_id, total)
             VALUES
-                ($1, $2, $3, $4)
+                ($1, $2, $3)
             ON CONFLICT
                 (id)
             DO UPDATE SET
-                user_id=EXCLUDED.user_id,
-                status=EXCLUDED.status
+                total=EXCLUDED.total
         "#;
         let mut tx = pool.begin().await?;
         let insert_query = sqlx::query(sql)
             .bind(&input.id)
             .bind(&input.user_id)
-            .bind(&input.total)
-            .bind(&input.status);
+            .bind(&input.total);
         if let Err(_) = insert_query.execute(&mut tx).await {
             tx.rollback().await?;
             return Err(Error::RowNotFound);
@@ -89,17 +61,17 @@ impl<'a> OrdersRepository for OrdersImpl<'a> {
         WHERE
             o.id=i.order_id and o.id=$1
         RETURNING
-            o.id, o.user_id, o.total, o.created_at, o.status
+            o.id, o.user_id, o.total, o.created_at
         "#;
         let mut tx = pool.begin().await?;
-        let deleted_order: OrderWithoutItems = match
-            sqlx::query_as(&sql).bind(id).fetch_one(&mut tx).await {
-            Ok(o) => o,
-            Err(_) => {
-                tx.rollback().await?;
-                return Err(Error::RowNotFound);
-            },
-        };
+        let deleted_order: OrderWithoutItems =
+            match sqlx::query_as(&sql).bind(id).fetch_one(&mut tx).await {
+                Ok(o) => o,
+                Err(_) => {
+                    tx.rollback().await?;
+                    return Err(Error::RowNotFound);
+                }
+            };
         tx.commit().await?;
         Ok(Order {
             id: deleted_order.id,
@@ -107,7 +79,6 @@ impl<'a> OrdersRepository for OrdersImpl<'a> {
             items: vec![],
             total: deleted_order.total,
             created_at: deleted_order.created_at,
-            status: deleted_order.status,
         })
     }
 
@@ -123,7 +94,7 @@ impl<'a> OrdersRepository for OrdersImpl<'a> {
 mod tests {
     use super::*;
     use crate::database::db_pool;
-    use crate::entities::order::OrderItem;
+    use crate::entities::order::{OrderItem, OrderItemInput};
 
     #[tokio::test]
     async fn test_order_repository() -> Result<(), Error> {
@@ -138,7 +109,6 @@ mod tests {
                 product_id: 1,
                 quantity: 1,
             }],
-            status: "payed".to_string(),
         };
 
         let tx = pool.begin().await?;
@@ -148,13 +118,12 @@ mod tests {
             id: order_id,
             user_id: 1,
             items: vec![OrderItem {
-                name: "カツ丼".to_string(),
-                price: 360,
+                name: "定食A".to_string(),
+                price: 420,
                 quantity: 1,
             }],
             total: 360,
             created_at: saved_order.created_at,
-            status: "payed".to_string(),
         };
         assert_eq!(expected_order, saved_order);
         let all_order = order_impl.list().await?;
@@ -169,7 +138,6 @@ mod tests {
             items: vec![],
             total: 360,
             created_at: saved_order.created_at,
-            status: "payed".to_string(),
         };
         let deleted_order = order_impl.delete(order_id).await?;
         assert_eq!(expected_deleted_order, deleted_order);

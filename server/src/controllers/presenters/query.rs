@@ -13,19 +13,14 @@ pub struct Query;
 
 #[Object]
 impl Query {
-    async fn list_order(&self, ctx: &Context<'_>) -> Vec<Order> {
+    async fn list_order(&self, ctx: &Context<'_>) -> Result<Vec<Order>, Error> {
         let repo = ctx.data::<RepositoryProvider>().unwrap();
-        order::list_order(repo).await.unwrap()
+        order::list_order(repo).await
     }
 
     async fn find_order_by_id(&self, ctx: &Context<'_>, id: Uuid) -> Result<Option<Order>, Error> {
         let repo = ctx.data::<RepositoryProvider>().unwrap();
         order::find_order_by_id(repo, id).await
-    }
-
-    async fn find_all_order(&self, ctx: &Context<'_>) -> Result<Vec<Order>, Error> {
-        let repo = ctx.data::<RepositoryProvider>().unwrap();
-        order::list_order(repo).await
     }
 
     async fn list_product(&self, ctx: &Context<'_>) -> Result<Vec<Product>, Error> {

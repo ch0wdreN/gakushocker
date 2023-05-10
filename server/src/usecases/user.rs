@@ -1,7 +1,6 @@
 use crate::database::RepositoryProvider;
-use crate::entities::user::User;
+use crate::entities::user::{User, UserInput};
 use crate::repositories::user::UsersRepository;
-use crate::repository_impl::user::UserInput;
 use sqlx::Error;
 
 pub async fn save(repo: &RepositoryProvider, input: UserInput) -> Result<User, Error> {
@@ -32,12 +31,9 @@ pub async fn find_user_by_email(
 pub async fn find_user_by_user_id(repo: &RepositoryProvider, id: i32) -> Result<User, Error> {
     let users = repo.users();
     let all_user = users.list().await?;
-    let user = all_user
-        .into_iter()
-        .filter(|user| user.id == id)
-        .collect::<Vec<User>>();
-    if user.len() == 0 {
-        return Err(Error::RowNotFound);
-    }
-    Ok(user[0].clone())
+    let user = match all_user.into_iter().find(|user| user.id == id) {
+        Some(u) => u,
+        None => return Err(Error::RowNotFound),
+    };
+    Ok(user)
 }

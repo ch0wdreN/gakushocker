@@ -1,4 +1,4 @@
-use async_graphql::SimpleObject;
+use async_graphql::{InputObject, SimpleObject};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
@@ -9,4 +9,14 @@ pub struct User {
     pub email: String,
     pub password: String,
     pub point: i32,
+    pub is_admin: bool,
+}
+
+#[derive(InputObject, Deserialize)]
+pub struct UserInput {
+    pub display_name: String,
+    pub email: String,
+    pub password: String,
+    pub point: i32,
+    pub is_admin: bool,
 }

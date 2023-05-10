@@ -1,5 +1,4 @@
-use crate::entities::order::Order;
-use crate::repository_impl::order::OrderInput;
+use crate::entities::order::{Order, OrderInput};
 use sqlx::Error;
 use uuid::Uuid;
 

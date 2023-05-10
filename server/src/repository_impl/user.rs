@@ -1,6 +1,5 @@
 use crate::database::ConnectionPool;
 use crate::entities::user::{User, UserInput};
-use crate::repositories::repository::Repository;
 use crate::repositories::user::UsersRepository;
 use sqlx::Error;
 
